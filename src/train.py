@@ -50,6 +50,10 @@ def train(model, device, train_loader, optimizer, epoch, log_interval):
         correct += num_correct
 
         if batch_idx % log_interval == 0:
+            if batch_idx == 0:
+                acc = 0
+            else:
+                acc = correct / (batch_idx * len(data))
             print(
                 "{} Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\tAccuracy: {:.6f}".format(
                     time.ctime(time.time()),
@@ -58,7 +62,7 @@ def train(model, device, train_loader, optimizer, epoch, log_interval):
                     len(train_loader.dataset),
                     100.0 * batch_idx / len(train_loader),
                     loss.item(),
-                    correct / (batch_idx * len(data))
+                    acc
                 )
             )
     train_loss = np.mean(losses)
