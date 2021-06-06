@@ -16,7 +16,7 @@ from torchvision import datasets, transforms
 # Define constants
 TRAIN_PATH = "./data/train"
 TEST_PATH = "./data/val"
-EXPERIMENT_VERSION = "alexNet"  # change this to start a new experiment
+EXPERIMENT_VERSION = "alexNetTrainable"  # change this to start a new experiment
 LOG_PATH = "./logs/" + EXPERIMENT_VERSION + "/"
 IMAGE_PATH = "./images"
 
@@ -24,7 +24,7 @@ IMAGE_PATH = "./images"
 BATCH_SIZE = 256
 TEST_BATCH_SIZE = 256
 EPOCHS = 100
-LEARNING_RATE = 0.01
+LEARNING_RATE = 0.001
 MOMENTUM = 0.9
 USE_CUDA = True
 PRINT_INTERVAL = 10

@@ -158,16 +158,18 @@ class TraceableCustomAlexNet(nn.Module):
         pretrain_model = make_traceable_net(
             models.alexnet,
             traceable=traceable,
-            pretrained=True,
-            num_classes=num_classes
+            pretrained=False,
+            num_classes=1024
         )
-        for param in pretrain_model.parameters():
-            # freeze parameters, for them to not be trainable
-            param.requires_grad = False
+        # for param in pretrain_model.parameters():
+        #     # freeze parameters, for them to not be trainable
+        #     param.requires_grad = False
         self.model = nn.Sequential(
             pretrain_model,
+            nn.BatchNorm1d(256),
             nn.ReLU(),
-            nn.Linear(1000, num_classes),
+            nn.Dropout(0.5),
+            nn.Linear(256, num_classes),
         )
         self.traceable = traceable
         self.accuracy = None
