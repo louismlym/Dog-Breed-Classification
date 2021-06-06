@@ -16,26 +16,21 @@ def sample_images(percentage, old_path, new_path):
     new_dir = new_path + '/' + os.path.basename(old_dir)
     shutil.move(old_dir, new_dir)
 
-sample_images(0.1, TRAIN_PATH, VAL_PATH)
+def make_image_folder_by_label(labels_path, images_path, name_col, label_col):
+  csv = pd.read_csv(labels_path)
+  img_to_label = {}
+  for index, row in csv.iterrows():
+    img_to_label[row[name_col]] = row[label_col]
 
-# labels = pd.read_csv(IMAGE_LABEL)
-# iter = labels.iterrows()
+  for file in os.listdir(images_path):
+    old_dir = images_path + "/" + file
+    img_name = os.path.splitext(file)[0]
+    if img_name in img_to_label:
+      label = img_to_label[img_name]
+      new_dir = images_path + '/' + label + '/' + file
+      os.makedirs(os.path.dirname(new_dir), exist_ok=True)
+      shutil.move(old_dir, new_dir)
 
-# imgNameToLabel = {}
-# for index, row in labels.iterrows():
-#   imgNameToLabel[row['id']] = row['breed']
-
-# count = 0
-
-# for trainFile in os.listdir(TRAIN_PATH):
-#   imgName = os.path.splitext(trainFile)[0]
-#   if imgName in imgNameToLabel:
-#     label = imgNameToLabel[imgName]
-    
-#     count = count + 1
-#     print(imgNameToLabel[imgName])
-#   if count >= 10:
-#     break
-
-# print(count)
-
+# sample_images(0.1, TRAIN_PATH, VAL_PATH)  # sample 10% of training images to be validation images
+# make_image_folder_by_label(IMAGE_LABEL, VAL_PATH, 'id', 'breed')    # move each image into its own belonging label folder
+# make_image_folder_by_label(IMAGE_LABEL, TRAIN_PATH, 'id', 'breed')  # move each image into its own belonging label folder
