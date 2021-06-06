@@ -152,6 +152,56 @@ class GenericTraceableNet(BaseSavableNet):
         return getattr(self.net, self.seq_attr).get_traces()
 
 
+class TraceableCustomAlexNet(nn.Module):
+    def __init__(self, num_classes, device, traceable=False):
+        super(TraceableCustomAlexNet, self).__init__()
+        pretrain_model = make_traceable_net(
+            models.alexnet,
+            traceable=traceable,
+            pretrained=True,
+            num_classes=num_classes
+        )
+        for param in pretrain_model.parameters():
+            # freeze parameters, for them to not be trainable
+            param.requires_grad = False
+        self.model = nn.Sequential(
+            pretrain_model,
+            nn.ReLU(),
+            nn.Linear(1000, num_classes),
+        )
+        self.traceable = traceable
+        self.accuracy = None
+        self.device = device
+
+    def forward(self, x: torch.Tensor):
+        x = self.model(x)
+        return F.softmax(x, dim=1)
+    
+    def set_traceable(self, traceable=True):
+        self.traceable = traceable
+        self.pretrain_model.features.set_traceable(traceable)
+
+    def get_traces(self):
+        return self.pretrain_model.features.get_traces()
+
+    def loss(self, prediction, label, reduction="mean"):
+        loss_val = F.cross_entropy(prediction, label.squeeze(), reduction=reduction)
+        return loss_val
+
+    def save_model(self, file_path, num_to_keep=1):
+        save(self, file_path, num_to_keep)
+
+    def save_best_model(self, accuracy, file_path, num_to_keep=1):
+        if self.accuracy == None or accuracy > self.accuracy:
+            self.accuracy = accuracy
+            self.save_model(file_path, num_to_keep)
+
+    def load_model(self, file_path):
+        restore(self, file_path, self.device)
+
+    def load_last_model(self, dir_path):
+        return restore_latest(self, dir_path, self.device)
+
 class TraceableCNN(nn.Module):
     def __init__(self, num_classes, device, traceable=False):
         super(TraceableCNN, self).__init__()

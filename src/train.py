@@ -9,14 +9,14 @@ from torchvision.transforms.transforms import Grayscale
 
 from src import utils
 from os import path
-from src.model import TraceableCNN
+from src.model import TraceableAlexNet, TraceableCNN, TraceableCustomAlexNet
 from torch import optim
 from torchvision import datasets, transforms
 
 # Define constants
 TRAIN_PATH = "./data/train"
 TEST_PATH = "./data/val"
-EXPERIMENT_VERSION = "exp"  # change this to start a new experiment
+EXPERIMENT_VERSION = "alexNet"  # change this to start a new experiment
 LOG_PATH = "./logs/" + EXPERIMENT_VERSION + "/"
 IMAGE_PATH = "./images"
 
@@ -27,13 +27,14 @@ EPOCHS = 100
 LEARNING_RATE = 0.01
 MOMENTUM = 0.9
 USE_CUDA = True
-PRINT_INTERVAL = 50
+PRINT_INTERVAL = 10
 WEIGHT_DECAY = 0.0005
 
 # Define Train and Test functions
 def train(model, device, train_loader, optimizer, epoch, log_interval):
     model.train()
     losses = []
+    correct = 0
     for batch_idx, (data, label) in enumerate(train_loader):
         data, label = data.to(device), label.to(device)
         optimizer.zero_grad()
@@ -42,18 +43,34 @@ def train(model, device, train_loader, optimizer, epoch, log_interval):
         losses.append(loss.item())
         loss.backward()
         optimizer.step()
+        # calculate correct predictions
+        pred = output.max(1)[1]
+        correct_mask = pred.eq(label.view_as(pred))
+        num_correct = correct_mask.sum().item()
+        correct += num_correct
+
         if batch_idx % log_interval == 0:
             print(
-                "{} Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}".format(
+                "{} Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\tAccuracy: {:.6f}".format(
                     time.ctime(time.time()),
                     epoch,
                     batch_idx * len(data),
                     len(train_loader.dataset),
                     100.0 * batch_idx / len(train_loader),
                     loss.item(),
+                    correct / (batch_idx * len(data))
                 )
             )
-    return np.mean(losses)
+    train_loss = np.mean(losses)
+    train_accuracy = 100.0 * correct / len(train_loader.dataset)
+
+    print(
+        "\nTrain set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n".format(
+            train_loss, correct, len(train_loader.dataset), train_accuracy
+        )
+    )
+
+    return train_loss, train_accuracy
 
 
 def test(model, device, test_loader, num_classes, log_interval=None):
@@ -99,11 +116,12 @@ def test(model, device, test_loader, num_classes, log_interval=None):
 
 
 # Import and transform dataset (data augmentations)
-transform_resize = transforms.Resize((128, 128))
+transform_resize = transforms.Resize((256, 256))
 transform_normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],std=[0.229, 0.224, 0.225]) 
 transform = transforms.Compose(
     [
         transform_resize,
+        transforms.CenterCrop(224),
         transforms.RandomHorizontalFlip(),
         transforms.RandomRotation(90),
         transforms.ToTensor(),
@@ -113,6 +131,7 @@ transform = transforms.Compose(
 transform_test = transforms.Compose(
     [
         transform_resize,
+        transforms.CenterCrop(224),
         transforms.ToTensor(),
         transform_normalize,
     ]
@@ -129,6 +148,7 @@ def train_model():
     use_cuda, device = utils.get_device()
     print("Using device", device)
     print("num cpus:", multiprocessing.cpu_count())
+    print("num classes:", NUM_CLASSES)
 
     kwargs = (
         {"num_workers": multiprocessing.cpu_count(), "pin_memory": True}
@@ -150,7 +170,8 @@ def train_model():
     # - Example of how to save image from dataloader
     # utils.save_image_from_dataloader(test_loader, 0, 72, "./images/correct-prediction-1", False)
 
-    model = TraceableCNN(NUM_CLASSES, device).to(device)
+    model = TraceableCustomAlexNet(num_classes=NUM_CLASSES, device=device).to(device)
+    print(model)
     optimizer = optim.SGD(
         model.parameters(),
         lr=LEARNING_RATE,
@@ -160,11 +181,11 @@ def train_model():
     start_epoch = model.load_last_model(LOG_PATH) + 1
     # read log
     if os.path.exists(LOG_PATH + "log.pkl"):
-        train_losses, test_losses, test_accuracies = pickle.load(
+        train_losses, test_losses, test_accuracies, train_accuracies = pickle.load(
             open(LOG_PATH + "log.pkl", "rb")
         )
     else:
-        train_losses, test_losses, test_accuracies = ([], [], [])
+        train_losses, test_losses, test_accuracies, train_accuracies = ([], [], [], [])
 
     test_loss, test_accuracy, confusion_matrix = test(
         model, device, test_loader, NUM_CLASSES, log_interval=10
@@ -176,7 +197,7 @@ def train_model():
 
     try:
         for epoch in range(start_epoch, EPOCHS + 1):
-            train_loss = train(
+            train_loss, train_accuracy = train(
                 model, device, train_loader, optimizer, epoch, PRINT_INTERVAL
             )
             test_loss, test_accuracy, confusion_matrix = test(
@@ -184,6 +205,7 @@ def train_model():
             )
             train_losses.append((epoch, train_loss))
             test_losses.append((epoch, test_loss))
+            train_accuracies.append((epoch, train_accuracy))
             test_accuracies.append((epoch, test_accuracy))
             # write log
             if not os.path.exists(os.path.dirname(LOG_PATH + "log.pkl")):
@@ -221,6 +243,15 @@ def train_model():
             "Error",
             path.join(IMAGE_PATH, "test-loss.jpg"),
         )
+        ep, val = zip(*train_accuracies)
+        utils.save_plot(
+            ep,
+            val,
+            "Train accuracy",
+            "Epoch",
+            "Accuracy (percentage)",
+            path.join(IMAGE_PATH, "train-accuracy.jpg"),
+        )
         ep, val = zip(*test_accuracies)
         utils.save_plot(
             ep,
@@ -228,7 +259,7 @@ def train_model():
             "Test accuracy",
             "Epoch",
             "Accuracy (percentage)",
-            path.join(IMAGE_PATH, "accuracy.jpg"),
+            path.join(IMAGE_PATH, "test-accuracy.jpg"),
         )
         utils.save_confusion_matrix(
             confusion_matrix,
