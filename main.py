@@ -41,6 +41,7 @@ def main():
 
     args = parser.parse_args()
     if args.train == True:
+        print('Params: ', args)
         train_model(
             train_path=args.train_path,
             test_path=args.test_path,
