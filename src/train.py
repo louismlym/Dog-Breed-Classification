@@ -134,7 +134,7 @@ def train_epochs(net, data, epochs=1, start_epoch=0, lr=0.01, momentum=0.9, deca
                             len(dataloader.dataset),
                             100.0 * (i + 1) / len(dataloader),
                             sum_loss / print_every,
-                            sum_correct / ((i + 1) * BATCH_SIZE)
+                            sum_correct / min((i + 1) * BATCH_SIZE, len(dataloader.dataset))
                             ))
                     sum_loss = 0.0
         avg_loss = epoch_loss / len(dataloader.dataset)
