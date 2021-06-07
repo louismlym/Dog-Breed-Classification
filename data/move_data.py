@@ -44,19 +44,19 @@ def get_top(num):
     top.append(i[0])
   return top
 
-def create_small_dataset(top, images_path):
+def create_small_dataset(top, images_path, suffix):
   for folder in os.listdir(images_path):
     if folder not in top:
       continue
     for file in os.listdir(images_path + '/' + folder):
       old_path = images_path + '/' + folder + '/' + file
-      new_path = images_path + '_small/' + folder + '/' + file
+      new_path = images_path + suffix + '/' + folder + '/' + file
       os.makedirs(os.path.dirname(new_path), exist_ok=True)
       shutil.copy(old_path, new_path)
 
 # sample_images(0.1, TRAIN_PATH, VAL_PATH)  # sample 10% of training images to be validation images
 # make_image_folder_by_label(IMAGE_LABEL, VAL_PATH, 'id', 'breed')    # move each image into its own belonging label folder
 # make_image_folder_by_label(IMAGE_LABEL, TRAIN_PATH, 'id', 'breed')  # move each image into its own belonging label folder
-# top20 = get_top(20)
-# create_small_dataset(top20, TRAIN_PATH)
-# create_small_dataset(top20, VAL_PATH)
+top10 = get_top(10)
+create_small_dataset(top10, TRAIN_PATH, '_top10')
+create_small_dataset(top10, VAL_PATH, '_top10')
