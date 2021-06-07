@@ -5,7 +5,6 @@ from src.train import train_model
 TRAIN_PATH = 'data/train'
 TEST_PATH = 'data/testing'
 EXP_VERSION = 'temp'
-MODEL = 'resnext50_32x4d'
 BATCH_SIZE = 64
 LEARNING_RATE = 0.01
 MOMENTUM = 0.9
@@ -35,4 +34,4 @@ def main(argv):
 
 if __name__ == "__main__":
   # main(sys.argv)
-  train_model(TRAIN_PATH, TEST_PATH, EXP_VERSION, MODEL)
+  train_model(TRAIN_PATH, TEST_PATH, EXP_VERSION)

@@ -126,13 +126,14 @@ def train_epochs(net, data, epochs=1, start_epoch=0, lr=0.01, momentum=0.9, deca
                             print('Train ', end='')
                         else:
                             print('Val ', end='')
-                        print('epoch: %2d batch: %5d [%5d/%5d (%.0f)%] loss: %.3f' % (
+                        print('Train Epoch: {} Batch {} [{}/{} ({:.2f}%)] loss: {:.4f} accuracy: {:.6f}'.format(
                             epoch,
                             i + 1,
                             i * BATCH_SIZE,
                             len(dataloader.dataset),
                             100.0 * i / len(dataloader),
-                            sum_loss / print_every
+                            sum_loss / print_every,
+                            correct / (i * BATCH_SIZE)
                             ))
                     sum_loss = 0.0
         avg_loss = epoch_loss / len(dataloader.dataset)
@@ -162,8 +163,8 @@ def train_epochs(net, data, epochs=1, start_epoch=0, lr=0.01, momentum=0.9, deca
             torch.save(state, checkpoint_path + 'checkpoint-%d.pkl'%(epoch+1))
     return train_losses, val_losses, train_acc, val_acc
 
-def get_model(num_classes, model='resnext50_32x4d'):
-    resnet = torch.hub.load('pytorch/vision:v0.6.0', model, pretrained=True)
+def get_model(num_classes):
+    resnet = torch.hub.load('pytorch/vision:v0.6.0', 'resnext50_32x4d', pretrained=True)
     resnet.fc = nn.Linear(2048, num_classes)
     return resnet
 
@@ -176,10 +177,10 @@ def load_model(num_classes, chkpt, strict=True):
     model.load_state_dict(state['net'], strict=strict)
     return model
 
-def train_model(train_path, test_path, exp_version, model):
+def train_model(train_path, test_path, exp_version):
     CHECKPOINT_PATH = 'logs/' + exp_version + '/'
     print("Using device:", device)
     data = get_data(train_path, test_path)
     # show_image(data)
-    resnet = get_model(len(data['classes']), model)
+    resnet = get_model(len(data['classes']))
     train_epochs(resnet, data, checkpoint_path=CHECKPOINT_PATH)
