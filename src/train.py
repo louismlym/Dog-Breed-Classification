@@ -17,7 +17,6 @@ VAL_PERCENTAGE = 0.1
 CHECKPOINT_PATH = 'logs/model'
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-mpl.use('tkagg') # for Mac BigSur to not get segfault using plt.imshow
 ssl._create_default_https_context = ssl._create_unverified_context # to be able to download pretrained model
 
 def get_data(train_path, test_path):
@@ -54,6 +53,7 @@ def show_image(data):
     print(images.size())
 
     def imshow(img):
+        # mpl.use('tkagg') # for Mac BigSur to not get segfault using plt.imshow
         npimg = img.numpy()
         plt.imshow(np.transpose(npimg, (1, 2, 0)))
         plt.savefig('images/train-data-samples.jpg')
