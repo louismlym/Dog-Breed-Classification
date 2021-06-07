@@ -9,14 +9,14 @@ from torchvision.transforms.transforms import Grayscale
 
 from src import utils
 from os import path
-from src.model import TraceableAlexNet, TraceableCNN, TraceableCustomAlexNet
+from src.model import TraceableAlexNet, TraceableCNN, TraceableCustomAlexNet, ResNext50
 from torch import optim
 from torchvision import datasets, transforms
 
 # Define constants
-TRAIN_PATH = "./data/train_small"
-TEST_PATH = "./data/val_small"
-EXPERIMENT_VERSION = "smalldata-alexnet"  # change this to start a new experiment
+TRAIN_PATH = "./data/train"
+TEST_PATH = "./data/val"
+EXPERIMENT_VERSION = "resnext"  # change this to start a new experiment
 LOG_PATH = "./logs/" + EXPERIMENT_VERSION + "/"
 IMAGE_PATH = "./images"
 
@@ -53,12 +53,12 @@ def train(model, device, train_loader, optimizer, epoch, log_interval):
             if batch_idx == 0:
                 acc = 0
             else:
-                acc = correct / (batch_idx * len(data))
+                acc = correct / (batch_idx * BATCH_SIZE)
             print(
                 "{} Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\tAccuracy: {:.6f}".format(
                     time.ctime(time.time()),
                     epoch,
-                    batch_idx * len(data),
+                    batch_idx * BATCH_SIZE,
                     len(train_loader.dataset),
                     100.0 * batch_idx / len(train_loader),
                     loss.item(),
@@ -174,7 +174,7 @@ def train_model():
     # - Example of how to save image from dataloader
     # utils.save_image_from_dataloader(test_loader, 0, 72, "./images/correct-prediction-1", False)
 
-    model = TraceableCustomAlexNet(num_classes=NUM_CLASSES, device=device).to(device)
+    model = ResNext50(num_classes=NUM_CLASSES, device=device).to(device)
     print(model)
     optimizer = optim.SGD(
         model.parameters(),

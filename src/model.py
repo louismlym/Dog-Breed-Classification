@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torchvision.models as models
+import ssl
 
 from src.utils import save, restore, restore_latest
 
@@ -250,6 +251,37 @@ class TraceableCNN(nn.Module):
                 self.traces.append((module_input, module_output, module, weight))
         x = torch.flatten(x, 1)
         x = self.fcs(x)
+        return F.softmax(x, dim=1)
+
+    def loss(self, prediction, label, reduction="mean"):
+        loss_val = F.cross_entropy(prediction, label.squeeze(), reduction=reduction)
+        return loss_val
+
+    def save_model(self, file_path, num_to_keep=1):
+        save(self, file_path, num_to_keep)
+
+    def save_best_model(self, accuracy, file_path, num_to_keep=1):
+        if self.accuracy == None or accuracy > self.accuracy:
+            self.accuracy = accuracy
+            self.save_model(file_path, num_to_keep)
+
+    def load_model(self, file_path):
+        restore(self, file_path, self.device)
+
+    def load_last_model(self, dir_path):
+        return restore_latest(self, dir_path, self.device)
+
+class ResNext50(nn.Module):
+    def __init__(self, num_classes, device):
+        super(ResNext50, self).__init__()
+        ssl._create_default_https_context = ssl._create_unverified_context
+        self.model = models.resnext50_32x4d(pretrained=True)
+        self.model.fc = nn.Linear(2048, num_classes)
+        self.accuracy = None
+        self.device = device
+
+    def forward(self, x: torch.Tensor):
+        x = self.model(x)
         return F.softmax(x, dim=1)
 
     def loss(self, prediction, label, reduction="mean"):

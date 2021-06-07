@@ -255,7 +255,7 @@ def save_confusion_matrix(
         print("Saved Confusion matrix, without normalization")
 
     plt.rc('font', size=font_size)
-    plt.figure(figsize=(60, 60), dpi=300)
+    plt.figure(figsize=(100, 100), dpi=100)
     plt.imshow(cm, interpolation="nearest", cmap=cmap)
     plt.title(title)
     plt.colorbar()
