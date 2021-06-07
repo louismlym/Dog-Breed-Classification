@@ -31,6 +31,32 @@ def make_image_folder_by_label(labels_path, images_path, name_col, label_col):
       os.makedirs(os.path.dirname(new_dir), exist_ok=True)
       shutil.move(old_dir, new_dir)
 
+def get_top(num):
+  counts = {}
+  for file in os.listdir(TRAIN_PATH):
+    counts[file] = len(os.listdir(TRAIN_PATH + '/' + file))
+
+  for file in os.listdir(VAL_PATH):
+    counts[file] += len(os.listdir(VAL_PATH + '/' + file))
+
+  top = []
+  for i in sorted(counts.items(), key = lambda kv:(-kv[1], kv[0]))[:num]:
+    top.append(i[0])
+  return top
+
+def create_small_dataset(top, images_path):
+  for folder in os.listdir(images_path):
+    if folder not in top:
+      continue
+    for file in os.listdir(images_path + '/' + folder):
+      old_path = images_path + '/' + folder + '/' + file
+      new_path = images_path + '_small/' + folder + '/' + file
+      os.makedirs(os.path.dirname(new_path), exist_ok=True)
+      shutil.copy(old_path, new_path)
+
 # sample_images(0.1, TRAIN_PATH, VAL_PATH)  # sample 10% of training images to be validation images
 # make_image_folder_by_label(IMAGE_LABEL, VAL_PATH, 'id', 'breed')    # move each image into its own belonging label folder
 # make_image_folder_by_label(IMAGE_LABEL, TRAIN_PATH, 'id', 'breed')  # move each image into its own belonging label folder
+# top20 = get_top(20)
+# create_small_dataset(top20, TRAIN_PATH)
+# create_small_dataset(top20, VAL_PATH)

@@ -14,20 +14,20 @@ from torch import optim
 from torchvision import datasets, transforms
 
 # Define constants
-TRAIN_PATH = "./data/train"
-TEST_PATH = "./data/val"
-EXPERIMENT_VERSION = "alexNetTrainable"  # change this to start a new experiment
+TRAIN_PATH = "./data/train_small"
+TEST_PATH = "./data/val_small"
+EXPERIMENT_VERSION = "smalldata-alexnet"  # change this to start a new experiment
 LOG_PATH = "./logs/" + EXPERIMENT_VERSION + "/"
 IMAGE_PATH = "./images"
 
 # Define hyperparamters
-BATCH_SIZE = 256
-TEST_BATCH_SIZE = 256
+BATCH_SIZE = 32
+TEST_BATCH_SIZE = 32
 EPOCHS = 100
-LEARNING_RATE = 0.001
+LEARNING_RATE = 0.01
 MOMENTUM = 0.9
 USE_CUDA = True
-PRINT_INTERVAL = 10
+PRINT_INTERVAL = 20
 WEIGHT_DECAY = 0.0005
 
 # Define Train and Test functions
