@@ -145,6 +145,9 @@ def train_epochs(net, data, epochs=1, start_epoch=0, lr=0.01, momentum=0.9, deca
             val_acc.append(accuracy)
         return avg_loss, accuracy, sum_correct
 
+    best_epoch = None
+    best_acc = 0
+
     for epoch in range(start_epoch, epochs):
         epoch_train_loss, epoch_train_acc, train_correct = train_or_eval(epoch, training=True)
         epoch_val_loss, epoch_val_acc, val_correct = train_or_eval(epoch, training=False)
@@ -163,6 +166,11 @@ def train_epochs(net, data, epochs=1, start_epoch=0, lr=0.01, momentum=0.9, deca
                      'val_losses': val_losses, 'train_acc': train_acc, 'val_acc': val_acc}
             os.makedirs(os.path.dirname(checkpoint_path), exist_ok=True)
             torch.save(state, checkpoint_path + 'checkpoint-%d.pkl'%(epoch+1))
+        
+        if val_acc > best_acc:
+            best_acc = val_acc
+            best_epoch = epoch
+    print('Best VALIDATION accuracy ({:.4f}%) at epoch {}'.format(best_acc, best_epoch))
     return train_losses, val_losses, train_acc, val_acc
 
 def get_model(num_classes):
