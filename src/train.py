@@ -168,8 +168,8 @@ def train_epochs(net, data, epochs=1, start_epoch=0, lr=0.01, momentum=0.9, deca
             os.makedirs(os.path.dirname(checkpoint_path), exist_ok=True)
             torch.save(state, checkpoint_path + 'checkpoint-%d.pkl'%(epoch+1))
         
-        if val_acc > best_acc:
-            best_acc = val_acc
+        if epoch_val_acc > best_acc:
+            best_acc = epoch_val_acc
             best_epoch = epoch
     print('Best VALIDATION accuracy ({:.4f}%) at epoch {}'.format(best_acc, best_epoch))
     return train_losses, val_losses, train_acc, val_acc
