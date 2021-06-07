@@ -205,6 +205,49 @@ def train_model():
     test_accuracies.append((start_epoch, test_accuracy))
     epoch = start_epoch - 1
 
+    def save_images():
+      ep, val = zip(*train_losses)
+      utils.save_plot(
+          ep,
+          val,
+          "Train loss",
+          "Epoch",
+          "Error",
+          path.join(IMAGE_PATH + "/" + EXPERIMENT_VERSION, "train-loss.jpg"),
+      )
+      ep, val = zip(*test_losses)
+      utils.save_plot(
+          ep,
+          val,
+          "Test loss",
+          "Epoch",
+          "Error",
+          path.join(IMAGE_PATH + "/" + EXPERIMENT_VERSION, "test-loss.jpg"),
+      )
+      ep, val = zip(*train_accuracies)
+      utils.save_plot(
+          ep,
+          val,
+          "Train accuracy",
+          "Epoch",
+          "Accuracy (percentage)",
+          path.join(IMAGE_PATH + "/" + EXPERIMENT_VERSION, "train-accuracy.jpg"),
+      )
+      ep, val = zip(*test_accuracies)
+      utils.save_plot(
+          ep,
+          val,
+          "Test accuracy",
+          "Epoch",
+          "Accuracy (percentage)",
+          path.join(IMAGE_PATH + "/" + EXPERIMENT_VERSION, "test-accuracy.jpg"),
+      )
+      utils.save_confusion_matrix(
+          confusion_matrix,
+          data_train.classes,
+          path.join(IMAGE_PATH + "/" + EXPERIMENT_VERSION, "confusion-matrix.jpg")
+      )
+
     try:
         for epoch in range(start_epoch, EPOCHS + 1):
             train_loss, train_accuracy = train(
@@ -226,6 +269,8 @@ def train_model():
             )
 
             model.save_best_model(test_accuracy, LOG_PATH + "%03d.pt" % epoch)
+            if epoch > 0 and epoch % 4 == 0:
+              save_images()
 
     except KeyboardInterrupt as ke:
         print("Interrupted")
@@ -235,44 +280,4 @@ def train_model():
         traceback.print_exc()
     finally:
         model.save_model(LOG_PATH + "%03d.pt" % epoch, 0)
-        ep, val = zip(*train_losses)
-        utils.save_plot(
-            ep,
-            val,
-            "Train loss",
-            "Epoch",
-            "Error",
-            path.join(IMAGE_PATH + "/" + EXPERIMENT_VERSION, "train-loss.jpg"),
-        )
-        ep, val = zip(*test_losses)
-        utils.save_plot(
-            ep,
-            val,
-            "Test loss",
-            "Epoch",
-            "Error",
-            path.join(IMAGE_PATH + "/" + EXPERIMENT_VERSION, "test-loss.jpg"),
-        )
-        ep, val = zip(*train_accuracies)
-        utils.save_plot(
-            ep,
-            val,
-            "Train accuracy",
-            "Epoch",
-            "Accuracy (percentage)",
-            path.join(IMAGE_PATH + "/" + EXPERIMENT_VERSION, "train-accuracy.jpg"),
-        )
-        ep, val = zip(*test_accuracies)
-        utils.save_plot(
-            ep,
-            val,
-            "Test accuracy",
-            "Epoch",
-            "Accuracy (percentage)",
-            path.join(IMAGE_PATH + "/" + EXPERIMENT_VERSION, "test-accuracy.jpg"),
-        )
-        utils.save_confusion_matrix(
-            confusion_matrix,
-            data_train.classes,
-            path.join(IMAGE_PATH + "/" + EXPERIMENT_VERSION, "confusion-matrix.jpg")
-        )
+        save_images()
