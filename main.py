@@ -2,14 +2,14 @@ import sys
 
 from src.train import train_model
 
-def usage():
+def usage(agrv):
   print(f"Usage: {argv[0]} [--train] [<TRAIN_PATH>] [<TEST_PATH>]")
   sys.exit(2)
 
 def train(argv):
   len_argv = len(argv)
   if (len_argv == 2 or len_argv == 4) and argv[1] != "--train":
-    usage()
+    usage(agrv)
   return len_argv == 2 or len_argv == 4
 
 
