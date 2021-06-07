@@ -130,7 +130,7 @@ def train_epochs(net, data, epochs=1, start_epoch=0, lr=0.01, momentum=0.9, deca
                         print('Epoch: {} Batch {} [{}/{} ({:.2f}%)] loss: {:.4f} accuracy: {:.6f}'.format(
                             epoch,
                             i + 1,
-                            (i + 1) * BATCH_SIZE,
+                            min((i + 1) * BATCH_SIZE, len(dataloader.dataset)),
                             len(dataloader.dataset),
                             100.0 * (i + 1) / len(dataloader),
                             sum_loss / print_every,
