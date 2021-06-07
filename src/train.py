@@ -25,7 +25,7 @@ def get_data(train_path, test_path):
         transforms.Resize(128),
         transforms.RandomCrop(128, padding=8, padding_mode='edge'), # Take 128x128 crops from padded images
         transforms.RandomHorizontalFlip(),    # 50% of time flip image along y-axis
-        transforms.RandomRotation(90),
+        transforms.RandomRotation(45),
         transforms.ToTensor(),
     ])
 
@@ -40,6 +40,7 @@ def get_data(train_path, test_path):
     train_size = int(len(trainset) * (1 - VAL_PERCENTAGE))
     val_size = len(trainset) - train_size
     trainset, valset = torch.utils.data.random_split(trainset, [train_size, val_size])
+    valset.transform = transform_test
     trainloader = torch.utils.data.DataLoader(trainset, batch_size=BATCH_SIZE, shuffle=True, num_workers=2)
     valloader = torch.utils.data.DataLoader(valset, batch_size=BATCH_SIZE, shuffle=False, num_workers=2)
 
