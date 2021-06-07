@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
+import os
 import ssl
 import torch
 import torchvision
@@ -126,14 +127,14 @@ def train_epochs(net, data, epochs=1, start_epoch=0, lr=0.01, momentum=0.9, deca
                             print('Train ', end='')
                         else:
                             print('Val ', end='')
-                        print('Train Epoch: {} Batch {} [{}/{} ({:.2f}%)] loss: {:.4f} accuracy: {:.6f}'.format(
+                        print('Epoch: {} Batch {} [{}/{} ({:.2f}%)] loss: {:.4f} accuracy: {:.6f}'.format(
                             epoch,
                             i + 1,
                             i * BATCH_SIZE,
                             len(dataloader.dataset),
                             100.0 * i / len(dataloader),
                             sum_loss / print_every,
-                            correct / (i * BATCH_SIZE)
+                            sum_correct / (i * BATCH_SIZE)
                             ))
                     sum_loss = 0.0
         avg_loss = epoch_loss / len(dataloader.dataset)
@@ -151,15 +152,16 @@ def train_epochs(net, data, epochs=1, start_epoch=0, lr=0.01, momentum=0.9, deca
 
         print('=' * 50)
         print('Epoch {} TRAIN      - average loss: {:.4f} accuracy: {}/{} ({:.2f}%)\n'.format(
-            epoch, epoch_train_loss, train_correct, len(data['train'].dataset), epoch_train_acc))
+            epoch, epoch_train_loss, train_correct, len(data['train'].dataset), epoch_train_acc * 100.0))
         print('Epoch {} VALIDATION - average loss: {:.4f} accuracy: {}/{} ({:.2f}%)\n'.format(
-            epoch, epoch_val_loss, val_correct, len(data['val'].dataset), epoch_val_acc))
+            epoch, epoch_val_loss, val_correct, len(data['val'].dataset), epoch_val_acc * 100.0))
         print('=' * 50)
 
         if checkpoint_path:
             state = {'epoch': epoch+1, 'net': net.state_dict(), 'optimizer': optimizer.state_dict(),
                      'scheduler': scheduler.state_dict(), 'train_losses': train_losses,
                      'val_losses': val_losses, 'train_acc': train_acc, 'val_acc': val_acc}
+            os.makedirs(os.path.dirname(checkpoint_path), exist_ok=True)
             torch.save(state, checkpoint_path + 'checkpoint-%d.pkl'%(epoch+1))
     return train_losses, val_losses, train_acc, val_acc
 
@@ -183,4 +185,6 @@ def train_model(train_path, test_path, exp_version):
     data = get_data(train_path, test_path)
     # show_image(data)
     resnet = get_model(len(data['classes']))
+    print("Using mode:")
+    print(resnet)
     train_epochs(resnet, data, checkpoint_path=CHECKPOINT_PATH)
