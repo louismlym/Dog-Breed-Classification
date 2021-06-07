@@ -3,24 +3,26 @@ import sys
 from src.train import train_model
 
 def usage(argv):
-  print(f"Usage: {argv[0]} [--train] [<TRAIN_PATH>] [<TEST_PATH>]")
+  print(f"Usage: {argv[0]} [--train] [<TRAIN_PATH>] [<TEST_PATH>] [<EXP_VERSION>]")
   sys.exit(2)
 
 def train(argv):
   len_argv = len(argv)
-  if (len_argv == 2 or len_argv == 4) and argv[1] != "--train":
+  if (len_argv == 2 or len_argv == 5) and argv[1] != "--train":
     usage(argv)
-  return len_argv == 2 or len_argv == 4
+  return len_argv == 2 or len_argv == 5
 
 
 def main(argv):
   if train(argv):
     train_path = "./data/train"
     test_path = "./data/val"
-    if len(argv) == 4:
+    exp_version = "resnext"
+    if len(argv) == 5:
       train_path = argv[2]
       test_path = argv[3]
-    train_model(train_path, test_path)
+      exp_version = argv[4]
+    train_model(train_path, test_path, exp_version)
 
 
 if __name__ == "__main__":

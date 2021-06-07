@@ -10,14 +10,14 @@ from torchvision.transforms.transforms import Grayscale
 from src import utils
 from os import path
 from src.model import TraceableAlexNet, TraceableCNN, TraceableCustomAlexNet, ResNext50
-from torch import optim
+from torch import exp, optim
 from torch.optim import lr_scheduler
 from torchvision import datasets, transforms
 
 # Define constants
 TRAIN_PATH = "./data/train"
 TEST_PATH = "./data/val"
-EXPERIMENT_VERSION = "resnext-small"  # change this to start a new experiment
+EXPERIMENT_VERSION = "resnext"  # change this to start a new experiment
 LOG_PATH = "./logs/" + EXPERIMENT_VERSION + "/"
 IMAGE_PATH = "./images"
 
@@ -144,9 +144,11 @@ transform_test = transforms.Compose(
 )
 
 
-def train_model(train_path, test_path):
+def train_model(train_path, test_path, exp_version):
     TRAIN_PATH = train_path
     TEST_PATH = test_path
+    EXPERIMENT_VERSION = exp_version
+    LOG_PATH = "./logs/" + EXPERIMENT_VERSION + "/"
     data_train = datasets.ImageFolder(TRAIN_PATH, transform=transform)
     data_test = datasets.ImageFolder(TEST_PATH, transform=transform_test)
 
