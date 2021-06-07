@@ -25,7 +25,6 @@ def get_data(train_path, test_path):
         transforms.Resize(128),
         transforms.RandomCrop(128, padding=8, padding_mode='edge'), # Take 128x128 crops from padded images
         transforms.RandomHorizontalFlip(),    # 50% of time flip image along y-axis
-        transforms.RandomRotation(45),
         transforms.ToTensor(),
     ])
 
