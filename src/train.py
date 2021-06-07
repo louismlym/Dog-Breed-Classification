@@ -15,8 +15,8 @@ from torch.optim import lr_scheduler
 from torchvision import datasets, transforms
 
 # Define constants
-TRAIN_PATH = "./data/train_small"
-TEST_PATH = "./data/val_small"
+TRAIN_PATH = "./data/train"
+TEST_PATH = "./data/val"
 EXPERIMENT_VERSION = "resnext-small"  # change this to start a new experiment
 LOG_PATH = "./logs/" + EXPERIMENT_VERSION + "/"
 IMAGE_PATH = "./images"
@@ -144,7 +144,9 @@ transform_test = transforms.Compose(
 )
 
 
-def train_model():
+def train_model(train_path, test_path):
+    TRAIN_PATH = train_path
+    TEST_PATH = test_path
     data_train = datasets.ImageFolder(TRAIN_PATH, transform=transform)
     data_test = datasets.ImageFolder(TEST_PATH, transform=transform_test)
 
