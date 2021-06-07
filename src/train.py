@@ -15,7 +15,7 @@ from torch.optim import lr_scheduler
 BATCH_SIZE = 64
 TEST_BATCH_SIZE = 1
 VAL_PERCENTAGE = 0.1
-CHECKPOINT_PATH = 'logs/model'
+CHECKPOINT_PATH = 'logs/exp/'
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 ssl._create_default_https_context = ssl._create_unverified_context # to be able to download pretrained model
@@ -170,21 +170,24 @@ def get_model(num_classes):
     resnet.fc = nn.Linear(2048, num_classes)
     return resnet
 
-def get_state(model, chkpt):
+def get_state(chkpt):
     return torch.load(CHECKPOINT_PATH + chkpt)
 
 def load_model(num_classes, chkpt, strict=True):
     model = get_model(num_classes)
-    state = get_state(model, chkpt)
+    state = get_state(chkpt)
     model.load_state_dict(state['net'], strict=strict)
     return model
 
-def train_model(train_path, test_path, exp_version):
+def train_model(train_path, test_path, exp_version, epochs, batch_size, lr, momentum, decay, print_every, verbose):
     CHECKPOINT_PATH = 'logs/' + exp_version + '/'
+    BATCH_SIZE = batch_size
     print("Using device:", device)
     data = get_data(train_path, test_path)
     # show_image(data)
     resnet = get_model(len(data['classes']))
     print("Using mode:")
     print(resnet)
-    train_epochs(resnet, data, checkpoint_path=CHECKPOINT_PATH)
+    train_epochs(resnet, data, epochs=epochs, lr=lr, momentum=momentum,
+        decay=decay, print_every=print_every, checkpoint_path=CHECKPOINT_PATH,
+        verbose=verbose)
