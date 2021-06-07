@@ -246,7 +246,7 @@ def to_scaled_uint8(array):
 
 
 def save_confusion_matrix(
-    cm, classes, filename, normalize=False, title="Confusion matrix", cmap=plt.cm.Blues, font_size=36
+    cm, classes, filename, normalize=False, title="Confusion matrix", cmap=plt.cm.Blues, font_size=72
 ):
     if normalize:
         cm = cm.astype("float") / cm.sum(axis=1)[:, np.newaxis]
@@ -255,7 +255,7 @@ def save_confusion_matrix(
         print("Saved Confusion matrix, without normalization")
 
     plt.rc('font', size=font_size)
-    plt.figure(figsize=(100, 100), dpi=100)
+    plt.figure(figsize=(70, 70), dpi=100)
     plt.imshow(cm, interpolation="nearest", cmap=cmap)
     plt.title(title)
     plt.colorbar()

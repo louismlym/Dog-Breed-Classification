@@ -57,6 +57,6 @@ def create_small_dataset(top, images_path, suffix):
 # sample_images(0.1, TRAIN_PATH, VAL_PATH)  # sample 10% of training images to be validation images
 # make_image_folder_by_label(IMAGE_LABEL, VAL_PATH, 'id', 'breed')    # move each image into its own belonging label folder
 # make_image_folder_by_label(IMAGE_LABEL, TRAIN_PATH, 'id', 'breed')  # move each image into its own belonging label folder
-top10 = get_top(10)
-create_small_dataset(top10, TRAIN_PATH, '_top10')
-create_small_dataset(top10, VAL_PATH, '_top10')
+# top10 = get_top(10)
+# create_small_dataset(top10, TRAIN_PATH, '_top10')
+# create_small_dataset(top10, VAL_PATH, '_top10')
