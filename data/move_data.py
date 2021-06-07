@@ -54,9 +54,19 @@ def create_small_dataset(top, images_path, suffix):
       os.makedirs(os.path.dirname(new_path), exist_ok=True)
       shutil.copy(old_path, new_path)
 
+def move_images(src_path, dest_path):
+  for folder in os.listdir(src_path):
+    for img in os.listdir(src_path + '/' + folder):
+      old_path = src_path + '/' + folder + '/' + img
+      new_path = dest_path + '/' + folder + '/' + img
+      print(old_path, new_path)
+      os.makedirs(os.path.dirname(new_path), exist_ok=True)
+      shutil.move(old_path, new_path)
+
 # sample_images(0.1, TRAIN_PATH, VAL_PATH)  # sample 10% of training images to be validation images
 # make_image_folder_by_label(IMAGE_LABEL, VAL_PATH, 'id', 'breed')    # move each image into its own belonging label folder
 # make_image_folder_by_label(IMAGE_LABEL, TRAIN_PATH, 'id', 'breed')  # move each image into its own belonging label folder
 # top10 = get_top(10)
 # create_small_dataset(top10, TRAIN_PATH, '_top10')
 # create_small_dataset(top10, VAL_PATH, '_top10')
+# move_images(VAL_PATH, TRAIN_PATH)
