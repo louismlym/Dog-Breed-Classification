@@ -66,14 +66,14 @@ def show_image(data):
     print("Labels:" + ', '.join('%9s' % data['classes'][j] for j in labels[:8]))
 
 def train_epochs(net, data, epochs=1, start_epoch=0, lr=0.01, momentum=0.9, decay=0.0005, 
-          verbose=1, print_every=10, state=None, checkpoint_path=None):
+          verbose=1, print_every=10, state=None, checkpoint_path=None, step_size=5, gamma=0.1):
     net.to(device)
     net.train()
     train_losses, val_losses = ([], [])
     train_acc, val_acc = ([], [])
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(net.parameters(), lr=lr, momentum=momentum, weight_decay=decay)
-    scheduler = lr_scheduler.StepLR(optimizer, step_size=5, gamma = 0.3) # decays LR by gamma for every step_size
+    scheduler = lr_scheduler.StepLR(optimizer, step_size=step_size, gamma = gamma) # decays LR by gamma for every step_size
 
     # Load previous training state
     if state:
@@ -188,7 +188,7 @@ def load_model(num_classes, chkpt, strict=True):
     model.load_state_dict(state['net'], strict=strict)
     return model
 
-def train_model(train_path, test_path, exp_version, epochs, batch_size, lr, momentum, decay, print_every, verbose):
+def train_model(train_path, test_path, exp_version, epochs, batch_size, lr, momentum, decay, print_every, verbose, step_size, gamma):
     CHECKPOINT_PATH = 'logs/' + exp_version + '/'
     BATCH_SIZE = batch_size
     print("Using device:", device)
@@ -199,4 +199,4 @@ def train_model(train_path, test_path, exp_version, epochs, batch_size, lr, mome
     print(resnet)
     train_epochs(resnet, data, epochs=epochs, lr=lr, momentum=momentum,
         decay=decay, print_every=print_every, checkpoint_path=CHECKPOINT_PATH,
-        verbose=verbose)
+        verbose=verbose, step_size=step_size, gamma=gamma)

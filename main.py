@@ -12,6 +12,8 @@ MOMENTUM = 0.9
 DECAY = 0.0005
 PRINT_EVERY = 10
 NUM_EPOCHS = 1
+STEP_SIZE = 5
+GAMMA = 0.1
 
 def main():
     parser = argparse.ArgumentParser()
@@ -38,6 +40,10 @@ def main():
                         help="define print for every (batch)")
     parser.add_argument('--no-verbose', action='store_true',
                         help="flag to not print during training")
+    parser.add_argument('--step-size', '-ss', type=int, nargs=None, default=STEP_SIZE,
+                        help="define step size for LR scheduler")
+    parser.add_argument('--gamma', '-g', type=float, nargs=None, default=GAMMA,
+                        help="define gamma for LR scheduler")
 
     args = parser.parse_args()
     if args.train == True:
@@ -52,7 +58,9 @@ def main():
             momentum=args.momentum,
             decay=args.weight_decay,
             print_every=args.print_every,
-            verbose=(not args.no_verbose))
+            verbose=(not args.no_verbose),
+            step_size=args.step_size,
+            gamma=args.gamma)
     else:
         parser.error("must flag --train or -t to train the model")
 
