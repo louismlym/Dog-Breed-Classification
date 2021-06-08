@@ -171,7 +171,7 @@ def train_epochs(net, data, epochs=1, start_epoch=0, lr=0.01, momentum=0.9, deca
         if epoch_val_acc > best_acc:
             best_acc = epoch_val_acc
             best_epoch = epoch
-    print('Best VALIDATION accuracy ({:.4f}%) at epoch {}'.format(best_acc, best_epoch))
+    print('Best VALIDATION accuracy ({:.4f}%) at epoch {}'.format(100 * best_acc, best_epoch))
     return train_losses, val_losses, train_acc, val_acc
 
 def get_model(num_classes):
