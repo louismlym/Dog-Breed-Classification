@@ -15,7 +15,6 @@ from torch.optim import lr_scheduler
 BATCH_SIZE = 64
 TEST_BATCH_SIZE = 1
 VAL_PERCENTAGE = 0.1
-CHECKPOINT_PATH = 'logs/exp/'
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 ssl._create_default_https_context = ssl._create_unverified_context # to be able to download pretrained model
@@ -179,17 +178,14 @@ def get_model(num_classes):
     resnet.fc = nn.Linear(2048, num_classes)
     return resnet
 
-def get_state(chkpt):
-    return torch.load(CHECKPOINT_PATH + chkpt)
-
-def load_model(num_classes, chkpt, strict=True):
+def load_model(num_classes, checkpoint_path, strict=True):
     model = get_model(num_classes)
-    state = get_state(chkpt)
+    state = torch.load(checkpoint_path)
     model.load_state_dict(state['net'], strict=strict)
     return model
 
 def train_model(train_path, test_path, exp_version, epochs, batch_size, lr, momentum, decay, print_every, verbose, step_size, gamma):
-    CHECKPOINT_PATH = 'logs/' + exp_version + '/'
+    checkpoint_path = 'logs/' + exp_version + '/'
     BATCH_SIZE = batch_size
     print("Using device:", device)
     data = get_data(train_path, test_path)
@@ -198,5 +194,32 @@ def train_model(train_path, test_path, exp_version, epochs, batch_size, lr, mome
     print("Using mode:")
     print(resnet)
     train_epochs(resnet, data, epochs=epochs, lr=lr, momentum=momentum,
-        decay=decay, print_every=print_every, checkpoint_path=CHECKPOINT_PATH,
+        decay=decay, print_every=print_every, checkpoint_path=checkpoint_path,
         verbose=verbose, step_size=step_size, gamma=gamma)
+
+def predict(net, data, ofname):
+    print("Writing csv submission file to " + ofname)
+    out = open(ofname, 'w')
+    # write header
+    out.write('id')
+    for label in data['classes']:
+        out.write(',' + label)
+    out.write('\n')
+    net.to(device)
+    net.eval()
+    with torch.no_grad():
+        for i, (images, labels) in enumerate(dataloader, 0):
+            if i > 5:
+                break
+            images, labels = images.to(device), labels.to(device)
+            outputs = net(images)
+            out.write(outputs[0])
+            for i in range(1, len(outputs)):
+                out.write(',' + outputs[i])
+            out.write('\n')
+
+def write_submission_file(train_path, test_path, exp_version, checkpoint_name):
+    checkpoint_path = 'logs/' + exp_version + '/'
+    data = get_data(train_path, test_path)
+    resnet = load_model(len(data['classes']), checkpoint_path + checkpoint_name)
+    predict(resnet, data, checkpoint_path + "preds.csv")

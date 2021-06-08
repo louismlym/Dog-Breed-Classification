@@ -1,7 +1,7 @@
 import sys
 import argparse
 
-from src.train import train_model
+from src.train import train_model, write_submission_file
 
 TRAIN_PATH = 'data/train'
 TEST_PATH = 'data/testing'
@@ -14,6 +14,7 @@ PRINT_EVERY = 10
 NUM_EPOCHS = 1
 STEP_SIZE = 5
 GAMMA = 0.3
+CHECKPOINT = 'checkpoint-1.pkl'
 
 def main():
     parser = argparse.ArgumentParser()
@@ -44,10 +45,14 @@ def main():
                         help="define step size for LR scheduler")
     parser.add_argument('--gamma', '-g', type=float, nargs=None, default=GAMMA,
                         help="define gamma for LR scheduler")
+    parser.add_argument('--submission', '-sub', action='store_true',
+                        help="flag to build submission csv file")
+    parser.add_argument('--checkpoint', '-chkpt', nargs=None, default=CHECKPOINT,
+                        help="define path for test dataset")
 
     args = parser.parse_args()
     if args.train == True:
-        print('Params: ', args)
+        print('Params:', args)
         train_model(
             train_path=args.train_path,
             test_path=args.test_path,
@@ -61,8 +66,16 @@ def main():
             verbose=(not args.no_verbose),
             step_size=args.step_size,
             gamma=args.gamma)
+    elif args.submission == True:
+        print('Params:', args)
+        write_submission_file(
+            train_path=args.train_path,
+            test_path=args.test_path,
+            exp_version=args.exp_version,
+            checkpoint_name=args.checkpoint
+        )
     else:
-        parser.error("must flag --train or -t to train the model")
+        parser.error("must flag --train or -t to train the model or --submission to create csv file")
 
 if __name__ == "__main__":
     main()
