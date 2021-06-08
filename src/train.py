@@ -213,6 +213,7 @@ def predict(net, data, ofname):
                 break
             images, labels = images.to(device), labels.to(device)
             outputs = net(images)
+            print(outputs)
             out.write(outputs[0])
             for i in range(1, len(outputs)):
                 out.write(',' + outputs[i])
