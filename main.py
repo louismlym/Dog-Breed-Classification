@@ -13,7 +13,7 @@ DECAY = 0.0005
 PRINT_EVERY = 10
 NUM_EPOCHS = 1
 STEP_SIZE = 5
-GAMMA = 0.1
+GAMMA = 0.3
 
 def main():
     parser = argparse.ArgumentParser()

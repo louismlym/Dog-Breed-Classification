@@ -66,14 +66,14 @@ def show_image(data):
     print("Labels:" + ', '.join('%9s' % data['classes'][j] for j in labels[:8]))
 
 def train_epochs(net, data, epochs=1, start_epoch=0, lr=0.01, momentum=0.9, decay=0.0005, 
-          verbose=1, print_every=10, state=None, checkpoint_path=None, step_size=5, gamma=0.1):
+          verbose=1, print_every=10, state=None, checkpoint_path=None, step_size=5, gamma=0.3):
     net.to(device)
     net.train()
     train_losses, val_losses = ([], [])
     train_acc, val_acc = ([], [])
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(net.parameters(), lr=lr, momentum=momentum, weight_decay=decay)
-    scheduler = lr_scheduler.StepLR(optimizer, step_size=step_size, gamma = gamma) # decays LR by gamma for every step_size
+    scheduler = lr_scheduler.StepLR(optimizer, step_size=step_size, gamma=gamma) # decays LR by gamma for every step_size
 
     # Load previous training state
     if state:
