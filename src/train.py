@@ -13,7 +13,7 @@ import torch.optim as optim
 from torch.optim import lr_scheduler
 
 BATCH_SIZE = 64
-TEST_BATCH_SIZE = 1
+TEST_BATCH_SIZE = 256
 VAL_PERCENTAGE = 0.1
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -28,7 +28,7 @@ def get_data(train_path, test_path):
     ])
 
     transform_test = transforms.Compose([
-        transforms.Resize(128),
+        transforms.Resize((128, 128)),
         transforms.ToTensor(),
     ])
     trainset = torchvision.datasets.ImageFolder(root=train_path, transform=transform_train)
@@ -208,18 +208,23 @@ def predict(net, data, ofname):
     net.to(device)
     net.eval()
     with torch.no_grad():
+        imgIdx = 0
         for i, (images, labels) in enumerate(data['test'], 0):
-            if (i + 1) % 500 == 0:
-                print("Write up to", (i + 1), "images")
+            if i >=1 :
+                break
+            if i % 5 == 0:
+                print("Write up to", (imgIdx + 1), "/", len(data['test'].dataset))
             images, labels = images.to(device), labels.to(device)
             outputs = net(images)
-            softmax = F.softmax(outputs[0])
-            fname, _ = data['test'].dataset.samples[i]
-            id = os.path.splitext(os.path.basename(fname))[0]
-            out.write(id)
-            for prob in softmax:
-                out.write(',' + str(float(prob)))
-            out.write('\n')
+            softmax = F.softmax(outputs, dim=1)
+            for imProb in softmax:
+                fname, _ = data['test'].dataset.samples[imgIdx]
+                id = os.path.splitext(os.path.basename(fname))[0]
+                out.write(id)
+                for prob in imProb:
+                    out.write(',' + str(float(prob)))
+                out.write('\n')
+                imgIdx = imgIdx + 1
 
 def write_submission_file(train_path, test_path, exp_version, checkpoint_name):
     checkpoint_path = 'logs/' + exp_version + '/'
