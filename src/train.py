@@ -208,7 +208,7 @@ def predict(net, data, ofname):
     net.to(device)
     net.eval()
     with torch.no_grad():
-        for i, (images, labels) in enumerate(dataloader, 0):
+        for i, (images, labels) in enumerate(data['test'], 0):
             if i > 5:
                 break
             images, labels = images.to(device), labels.to(device)
