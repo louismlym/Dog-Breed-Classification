@@ -209,8 +209,6 @@ def predict(net, data, ofname):
     net.eval()
     with torch.no_grad():
         for i, (images, labels) in enumerate(data['test'], 0):
-            if i > 5:
-                break
             if (i + 1) % 500 == 0:
                 print("Write up to", (i + 1), "images")
             images, labels = images.to(device), labels.to(device)
