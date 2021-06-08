@@ -180,7 +180,7 @@ def get_model(num_classes):
 
 def load_model(num_classes, checkpoint_path, strict=True):
     model = get_model(num_classes)
-    state = torch.load(checkpoint_path)
+    state = torch.load(checkpoint_path, map_location=device)
     model.load_state_dict(state['net'], strict=strict)
     return model
 
@@ -211,12 +211,16 @@ def predict(net, data, ofname):
         for i, (images, labels) in enumerate(data['test'], 0):
             if i > 5:
                 break
+            if (i + 1) % 500 == 0:
+                print("Write up to", (i + 1), "images")
             images, labels = images.to(device), labels.to(device)
             outputs = net(images)
-            print(outputs)
-            out.write(outputs[0])
-            for i in range(1, len(outputs)):
-                out.write(',' + outputs[i])
+            softmax = F.softmax(outputs[0])
+            fname, _ = data['test'].dataset.samples[i]
+            id = os.path.splitext(os.path.basename(fname))[0]
+            out.write(id)
+            for prob in softmax:
+                out.write(',' + str(float(prob)))
             out.write('\n')
 
 def write_submission_file(train_path, test_path, exp_version, checkpoint_name):
