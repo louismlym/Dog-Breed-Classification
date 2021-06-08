@@ -210,10 +210,8 @@ def predict(net, data, ofname):
     with torch.no_grad():
         imgIdx = 0
         for i, (images, labels) in enumerate(data['test'], 0):
-            if i >=1 :
-                break
-            if i % 5 == 0:
-                print("Write up to", (imgIdx + 1), "/", len(data['test'].dataset))
+            if i % 3 == 0:
+                print("Write up to {}/{}".format(imgIdx, len(data['test'].dataset)))
             images, labels = images.to(device), labels.to(device)
             outputs = net(images)
             softmax = F.softmax(outputs, dim=1)
