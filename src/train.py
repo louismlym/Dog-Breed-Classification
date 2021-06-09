@@ -119,7 +119,7 @@ def train_epochs(net, data, epochs=1, start_epoch=0, lr=0.01, momentum=0.9, deca
                 # calculate correct predictions
                 predicted = outputs.max(1)[1]
                 correct = torch.sum(predicted == labels.data)
-                sum_correct += correct
+                sum_correct += int(correct)
 
                 if i % print_every == print_every - 1:
                     if verbose:

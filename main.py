@@ -1,10 +1,12 @@
 import sys
 import argparse
+from src.save_figs import save_figs
 
 from src.train import train_model, write_submission_file
 
 TRAIN_PATH = 'data/train'
 TEST_PATH = 'data/testing'
+FIGURES_PATH = 'figures'
 EXP_VERSION = 'exp'
 BATCH_SIZE = 64
 LEARNING_RATE = 0.01
@@ -49,6 +51,8 @@ def main():
                         help="flag to build submission csv file")
     parser.add_argument('--checkpoint', '-chkpt', nargs=None, default=CHECKPOINT,
                         help="define path for test dataset")
+    parser.add_argument('--save-figs', action='store_true',
+                        help="flag to save figs from a checkpoint")
 
     args = parser.parse_args()
     if args.train == True:
@@ -73,6 +77,13 @@ def main():
             test_path=args.test_path,
             exp_version=args.exp_version,
             checkpoint_name=args.checkpoint
+        )
+    elif args.save_figs == True:
+        print('Params:', args)
+        save_figs(
+            exp_version=args.exp_version,
+            checkpoint_name=args.checkpoint,
+            figures_path=FIGURES_PATH
         )
     else:
         parser.error("must flag --train or -t to train the model or --submission to create csv file")
