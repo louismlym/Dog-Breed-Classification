@@ -40,14 +40,15 @@ def predict(image_path):
 
 st.set_option('deprecation.showfileUploaderEncoding', False)
 
+st.set_page_config(page_title='Dog Breed Classification')
 st.title("Dog Breed Classification")
 st.markdown("See [list of 120 breeds](https://github.com/louismlym/Dog-Breed-Classification/blob/main/data/classes.txt) we can classify")
 st.write("Please upload an image of a dog, and I will try to classify its breed!")
 
-file_up = st.file_uploader("Upload an image", type="jpg")
+file_up = st.file_uploader("Upload an image", type=["jpg", "jpeg"])
 
 if file_up is not None:
-    image = Image.open(file_up)
+    image = Image.open(file_up).convert('RGB')
     st.image(image, caption='Uploaded Image.', use_column_width=True)
     st.write("")
     placeholder = st.empty()
