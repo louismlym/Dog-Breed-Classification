@@ -42,7 +42,7 @@ st.set_option('deprecation.showfileUploaderEncoding', False)
 
 st.title("Dog Breed Classification")
 st.markdown("See [list of 120 breeds](https://github.com/louismlym/Dog-Breed-Classification/blob/main/data/classes.txt) we can classify")
-st.write("Please upload an image of a dog, and we will try to classify its breed!")
+st.write("Please upload an image of a dog, and I will try to classify its breed!")
 
 file_up = st.file_uploader("Upload an image", type="jpg")
 
@@ -51,12 +51,12 @@ if file_up is not None:
     st.image(image, caption='Uploaded Image.', use_column_width=True)
     st.write("")
     placeholder = st.empty()
-    placeholder.write("Hmmm, let us think for a bit..")
+    placeholder.write("Hmmm, let me think for a bit..")
     #st.write("Just a second...")
     labels = predict(file_up)
     placeholder.empty()
 
     # print out the top 5 prediction labels with scores
-    st.write("We think it is..")
+    st.write("I think it is..")
     for i in labels:
         st.write("-", i[0], "| confidence:", i[1], "%")#We think it is {} (confidence: {:.2f}%)".format(i[0], i[1]))
