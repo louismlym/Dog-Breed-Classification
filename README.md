@@ -46,13 +46,13 @@ I used cross entrophy as a loss function. I also used stochastic gradient descen
 
 After running models on several hyperparameters, I ended up with the final model that yields 93.34% accuracy on the training dataset and 79.47% accuracy on the validation dataset. Below are the charts from training the model:
 
-<img src="figures/final_mode/train-losses.jpg" alt="Train losses"
+<img src="figures/final_model/train-losses.jpg" alt="Train losses"
 	title="Train loss" width="70%" />
-<img src="figures/final_mode/validation-losses.jpg" alt="Validation losses"
+<img src="figures/final_model/validation-losses.jpg" alt="Validation losses"
 	title="Validation loss" width="70%" />
-<img src="figures/final_mode/train_acc.jpg" alt="Train accuracy"
+<img src="figures/final_model/train_acc.jpg" alt="Train accuracy"
 	title="Train accuracy" width="70%" />
-<img src="figures/final_mode/validation_acc.jpg" alt="Validation accuracy"
+<img src="figures/final_model/validation_acc.jpg" alt="Validation accuracy"
 	title="Validation accuracy" width="70%" />
 
 ## Discussion
