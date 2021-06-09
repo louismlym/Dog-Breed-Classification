@@ -48,11 +48,11 @@ After running models on several hyperparameters, I ended up with the final model
 
 <img src="figures/final_model/train-losses.jpg" alt="Train losses"
 	title="Train loss" width="70%" />
-<img src="figures/final_model/validation-losses.jpg" alt="Validation losses"
+<img src="figures/final_model/val-losses.jpg" alt="Validation losses"
 	title="Validation loss" width="70%" />
-<img src="figures/final_model/train_acc.jpg" alt="Train accuracy"
+<img src="figures/final_model/train-acc.jpg" alt="Train accuracy"
 	title="Train accuracy" width="70%" />
-<img src="figures/final_model/validation_acc.jpg" alt="Validation accuracy"
+<img src="figures/final_model/val-acc.jpg" alt="Validation accuracy"
 	title="Validation accuracy" width="70%" />
 
 ## Discussion
