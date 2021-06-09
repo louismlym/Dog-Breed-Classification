@@ -1,4 +1,4 @@
 streamlit==0.82.0
-torch==1.7.1+cpu
-torchvision==0.8.2+cpu
+torch @ https://download.pytorch.org/whl/cpu/torch-1.7.1%2Bcpu-cp37-cp37m-linux_x86_64.whl
+torchvision @ https://download.pytorch.org/whl/cpu/torchvision-0.8.2%2Bcpu-cp37-cp37m-linux_x86_64.whl
 Pillow==8.2.0
