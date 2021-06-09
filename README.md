@@ -2,7 +2,7 @@
 
 View running application on **Heroku App**: https://dog-breed-classifier-maliyp.herokuapp.com/
 
-I have trained a CNN model using a pretrained model [resnext50_32x4d](https://pytorch.org/hub/pytorch_vision_resnext/) to classify dog breeds. We focus on 120 breeds of dogs which is listed [here](data/classes.txt). The training dataset contains 10,222 images of dogs, in which I randomly sample 10% (which is 1,023) of the images to be in validation dataset. This makes the model learn from 9199 of the dog images.
+I have trained a CNN model using a pretrained model [resnext50_32x4d](https://pytorch.org/hub/pytorch_vision_resnext/) to classify dog breeds. We focus on 120 breeds of dogs which is listed [here](data/classes.txt). The training dataset contains 10,222 images of dogs, in which I randomly sample 10% (which is 1,023) of the images to be in validation dataset. This makes the model learn from 9,199 of the dog images.
 
 Applying image augmentations and using a the trained model described above for 12 epochs give us 93.34% accuracy on the training dataset and 79.47% accuracy on the validation dataset.
 
@@ -22,7 +22,7 @@ To see an example of how I trained the model, feel free to refer to this [Colab 
 
 ## Introduction
 
-Dogs are CUTE! And they have so many breeds that just by looking at the picture, we (humans) may not know what breed they are. That's why I wanted to come up with an application that can predicts dog breed from an uploaded image from users.
+Dogs are CUTE! And they have so many breeds that just by looking at the picture, we (humans) may not know what breed they are. That's why I wanted to come up with an application that can predict dog breed from an uploaded image of users.
 
 ## Dataset
 
@@ -32,27 +32,27 @@ The dataset contains 10,222 images of dogs to train. To be able to evaluate the 
 
 ## Data Augmentation
 
-To make the model more generalized, I randomly perform image augmentations to the training images before input them into the model, so the model see a more diverse data. Specifically, I performed random crop and random horizontal flip on the image (see [train.py](src/train.py) for more details).
+To make the model more generalized, I randomly perform image augmentations to the training images before inputting them into the model, so the model see a more diverse data. Specifically, I performed random crop and random horizontal flip on the image (see [train.py](src/train.py#L25) for more details).
 
 ## Network Architecture
 
-I used [resnext50_32x4d](https://pytorch.org/hub/pytorch_vision_resnext/) and its pretained weight, so the network that I used here has similar architecture as resnext50_32x4d. However, I changed the last fully connected layer such that it has output size of 120, which mathes the number of classes (i.e. dog breeds) that our dataset contains.
+I used [resnext50_32x4d](https://pytorch.org/hub/pytorch_vision_resnext/) and its pretained weight, so the network that I used here has similar architecture as `resnext50_32x4d`. However, I changed the last fully connected layer such that it has output size of 120, which matches the number of classes (i.e. dog breeds) that our dataset contains.
 
 The training image was transformed into size of 128x128 before inputting into the model. Each image is in RGB, so they all start with three channels. We want to classify the images into one of the 120 classes, so, as I mentioned earlier, I ended up with a fully connected layer that has 120 nodes at the end.
 
-I used cross entrophy as a loss function. I also used stochastic gradient descent as a way to optimize my training model. Moreover, I used scheduler with step_size and gamma to decay the learning rate while training the model. More details can be found in [train.py](src/train.py). Specifically, for the final model, for optimizer, I chose learning rate=0.001, momentum=0.9, and weight_decay=0.0005. For scheduler, I chose gamma=0.7 and step_size=3. You could see how I trained my model in this [Colab notebook](https://colab.research.google.com/drive/1hLzUMpJpho_-E_zT1pagCJ-urzeGTHld?usp=sharing).
+I used cross entrophy as a loss function. I also used stochastic gradient descent as a way to optimize my training model. Moreover, I used scheduler with `step_size` and `gamma` to decay the learning rate while training the model. More details can be found in [train.py](src/train.py). Specifically, for the final model, for optimizer, I chose `learning rate=0.001`, `momentum=0.9`, and `weight_decay=0.0005`. For scheduler, I chose `gamma=0.7` and `step_size=3`. You could see how I trained my model in this [Colab notebook](https://colab.research.google.com/drive/1hLzUMpJpho_-E_zT1pagCJ-urzeGTHld?usp=sharing).
 
 ## Results
 
 After running models on several hyperparameters, I ended up with the final model that yields 93.34% accuracy on the training dataset and 79.47% accuracy on the validation dataset. Below are the charts from training the model:
 
-<img src="figures/train-losses.jpg" alt="Train losses"
+<img src="figures/final_mode/train-losses.jpg" alt="Train losses"
 	title="Train loss" width="70%" />
-<img src="figures/validation-losses.jpg" alt="Validation losses"
+<img src="figures/final_mode/validation-losses.jpg" alt="Validation losses"
 	title="Validation loss" width="70%" />
-<img src="figures/train_acc.jpg" alt="Train accuracy"
+<img src="figures/final_mode/train_acc.jpg" alt="Train accuracy"
 	title="Train accuracy" width="70%" />
-<img src="figures/validation_acc.jpg" alt="Validation accuracy"
+<img src="figures/final_mode/validation_acc.jpg" alt="Validation accuracy"
 	title="Validation accuracy" width="70%" />
 
 ## Discussion
